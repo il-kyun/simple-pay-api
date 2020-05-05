@@ -1,6 +1,5 @@
 package com.pay.api.domain;
 
-import com.pay.api.exception.BadRequestException;
 import com.pay.api.exception.CryptoFailException;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,17 +27,11 @@ import static org.springframework.util.StringUtils.hasText;
 @Slf4j
 class CardInfoCrypto {
 
-    private enum CryptoType {
-        DECRYPT,
-        ENCRYPT
-    }
-
     private final String transactionId;
     private String cardNumber;
     private String expirationMonthYear;
     private String cvc;
     private String encryptedCardInfo;
-    private final CryptoType type;
 
     private CardInfoCrypto(String transactionId, String cardNumber, String expirationMonthYear, String cvc) {
         checkArgument(hasText(transactionId) && transactionId.length() == 20, "illegal transactionId");
@@ -50,7 +43,6 @@ class CardInfoCrypto {
         this.cardNumber = cardNumber;
         this.expirationMonthYear = expirationMonthYear;
         this.cvc = cvc;
-        this.type = CryptoType.ENCRYPT;
     }
 
     private CardInfoCrypto(String transactionId, String encryptedCardInfo) {
@@ -59,7 +51,6 @@ class CardInfoCrypto {
 
         this.transactionId = transactionId;
         this.encryptedCardInfo = encryptedCardInfo;
-        this.type = CryptoType.DECRYPT;
     }
 
     private CardInfoCrypto encrypt() {
@@ -88,30 +79,18 @@ class CardInfoCrypto {
     }
 
     String getCardNumber() {
-        if (!CryptoType.DECRYPT.equals(type)) {
-            throw new BadRequestException("this method is not allowed for not encrypt case");
-        }
         return cardNumber;
     }
 
     String getExpirationMonthYear() {
-        if (!CryptoType.DECRYPT.equals(type)) {
-            throw new BadRequestException("this method is not allowed for not encrypt case");
-        }
         return expirationMonthYear;
     }
 
     String getCvc() {
-        if (!CryptoType.DECRYPT.equals(type)) {
-            throw new BadRequestException("this method is not allowed for not encrypt case");
-        }
         return cvc;
     }
 
     String getEncryptedCardInfo() {
-        if (!CryptoType.ENCRYPT.equals(type)) {
-            throw new BadRequestException("this method is not allowed for not encrypt case");
-        }
         return encryptedCardInfo;
     }
 
