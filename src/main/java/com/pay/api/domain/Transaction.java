@@ -1,6 +1,7 @@
 package com.pay.api.domain;
 
 import com.google.common.base.Strings;
+import com.pay.api.TransactionType;
 import com.pay.api.exception.BadRequestException;
 import com.pay.api.exception.IllegalStatusException;
 import lombok.Getter;
@@ -26,8 +27,6 @@ import static org.springframework.util.StringUtils.hasText;
 @Table(uniqueConstraints = {@UniqueConstraint(columnNames = {"TRANSACTION_ID"}, name = "UK_TRANSACTION_ID")})
 public class Transaction {
 
-    private static final String PAY = "PAY";
-    private static final String CANCEL = "CANCEL";
     private static DateTimeFormatter FORMATTER = DateTimeFormatter.ofPattern("yyMMddHHmmssSSS");
 
     @Id
@@ -39,7 +38,8 @@ public class Transaction {
     private String transactionId;
 
     @Column(name = "TRANSACTION_TYPE", nullable = false, length = 15)
-    private String transactionType;
+    @Enumerated(value = EnumType.STRING)
+    private TransactionType transactionType;
 
     @Column(name = "ENCRYPTED_CARD_INFO", nullable = false, length = 300)
     private String encryptedCardInfo;
@@ -67,7 +67,7 @@ public class Transaction {
     private Transaction payTransaction;
 
     @Column
-    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL, mappedBy = "payTransaction")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "payTransaction")
     private List<Transaction> cancelTransactionList = new ArrayList<>();
 
     @Column(name = "CREATED_AT")
@@ -83,7 +83,7 @@ public class Transaction {
 
     private Transaction(String cardNumber, String expirationMonthYear, String cvc, Integer installment, Long amount, Long vat) {
         this.transactionId = generateTransactionId();
-        this.transactionType = PAY;
+        this.transactionType = TransactionType.PAY;
 
         this.encryptedCardInfo = CardInfoCrypto.encrypt(this.transactionId, cardNumber, expirationMonthYear, cvc).getEncryptedCardInfo();
 
@@ -107,7 +107,7 @@ public class Transaction {
 
     private Transaction(Transaction payTransaction, Long requestedAmount, Long requestedVat) {
         this.transactionId = generateTransactionId();
-        this.transactionType = CANCEL;
+        this.transactionType = TransactionType.CANCEL;
 
         this.installment = 0;
         this.encryptedCardInfo = payTransaction.getEncryptedCardInfo();
@@ -121,7 +121,7 @@ public class Transaction {
 
         payTransaction.updateRemainAmountAndVat(this.remainAmount, this.remainVat);
 
-        CardInfoCrypto cardInfoCrypto = payTransaction.getCardInfo();
+        final CardInfoCrypto cardInfoCrypto = payTransaction.getCardInfo();
         this.message = MessageBuilder.newCancelMessageBuilder()
                 .id(this.getTransactionId())
                 .cardNumber(cardInfoCrypto.getCardNumber())
@@ -242,13 +242,12 @@ public class Transaction {
             return this.cardInfoCrypto;
         }
 
-        final CardInfoCrypto decryptedCardInfo = CardInfoCrypto.decrypt(PAY.equals(this.transactionType) ? this.transactionId : this.payTransaction.getTransactionId(), this.encryptedCardInfo);
+        final CardInfoCrypto decryptedCardInfo = CardInfoCrypto.decrypt(TransactionType.PAY.equals(this.transactionType) ? this.transactionId : this.payTransaction.getTransactionId(), this.encryptedCardInfo);
         this.cardInfoCrypto = decryptedCardInfo;
         return decryptedCardInfo;
     }
 
     boolean isCancellableTransaction() {
-        return PAY.equals(this.transactionType) && this.remainAmount > 0;
+        return TransactionType.PAY.equals(this.transactionType) && this.remainAmount > 0;
     }
-
 }

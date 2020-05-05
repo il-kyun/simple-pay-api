@@ -1,5 +1,6 @@
 package com.pay.api.multithread
 
+import com.pay.api.TransactionType
 import com.pay.api.controller.cancel.CancelRequest
 import com.pay.api.controller.cancel.CancelResponse
 import com.pay.api.controller.find.FindResponse
@@ -19,7 +20,6 @@ import spock.lang.Stepwise
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
 import java.util.concurrent.Future
-
 
 /**
  * 전체취소 : 결제 한 건에 대한 전체취소를 동시에 할 수 없습니다.
@@ -99,7 +99,7 @@ class MultiThreadTest2 extends Specification {
 
         then:
         conflictCount == 3
-        successResponseEntityList.get(0).body.transactionType == "CANCEL"
+        successResponseEntityList.get(0).body.transactionType == TransactionType.CANCEL
         successResponseEntityList.get(0).body.remainAmount == 0
         successResponseEntityList.get(0).body.remainVat == 0
         successResponseEntityList.get(0).body.payTransactionId == transactionId
@@ -111,7 +111,7 @@ class MultiThreadTest2 extends Specification {
 
         then:
         response.body.transactionId == transactionId
-        response.body.transactionType == "PAY"
+        response.body.transactionType == TransactionType.PAY
         response.body.remainAmount == 0
         response.body.remainVat == 0
     }

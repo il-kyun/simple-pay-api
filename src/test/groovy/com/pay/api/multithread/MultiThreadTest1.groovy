@@ -1,10 +1,10 @@
 package com.pay.api.multithread
 
-import com.pay.api.card.CardApi
 import com.pay.api.controller.pay.PayRequest
 import com.pay.api.domain.PayService
 import com.pay.api.domain.Transaction
 import com.pay.api.domain.TransactionRepository
+import com.pay.api.domain.card.CardCompanyApi
 import com.pay.api.exception.ConflictException
 import spock.lang.Specification
 
@@ -21,7 +21,7 @@ class MultiThreadTest1 extends Specification {
 
     PayService payService
     TransactionRepository transactionRepository
-    CardApi cardApi
+    CardCompanyApi cardApi
 
     def setup() {
         transactionRepository = Mock()

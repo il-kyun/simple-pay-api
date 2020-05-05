@@ -6,10 +6,8 @@ import com.pay.api.controller.find.FindResponse;
 import com.pay.api.controller.pay.PayRequest;
 import com.pay.api.controller.pay.PayResponse;
 import com.pay.api.domain.PayService;
-import com.pay.api.exception.FieldErrorException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.BindingResult;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,21 +27,13 @@ public class PayController {
     }
 
     @PostMapping
-    public ResponseEntity<PayResponse> pay(@Valid @RequestBody PayRequest payRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new FieldErrorException(bindingResult);
-        }
-
+    public ResponseEntity<PayResponse> pay(@Valid @RequestBody PayRequest payRequest) {
         final PayResponse payResponse = payService.pay(payRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(payResponse);
     }
 
     @DeleteMapping("/{transactionId}")
-    public CancelResponse cancel(@PathVariable @NotEmpty @Size(min = 20, max = 20) String transactionId, @Valid @RequestBody CancelRequest cancelRequest, BindingResult bindingResult) {
-        if (bindingResult.hasErrors()) {
-            throw new FieldErrorException(bindingResult);
-        }
-
+    public CancelResponse cancel(@PathVariable @NotEmpty @Size(min = 20, max = 20) String transactionId, @Valid @RequestBody CancelRequest cancelRequest) {
         return payService.cancel(transactionId, cancelRequest);
     }
 

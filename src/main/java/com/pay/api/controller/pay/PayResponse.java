@@ -1,5 +1,6 @@
 package com.pay.api.controller.pay;
 
+import com.pay.api.TransactionType;
 import com.pay.api.domain.Transaction;
 import lombok.Getter;
 
@@ -11,7 +12,7 @@ import static java.util.Objects.requireNonNull;
 public class PayResponse {
     private String transactionId;
 
-    private String transactionType;
+    private TransactionType transactionType;
 
     private LocalDateTime createdAt;
 

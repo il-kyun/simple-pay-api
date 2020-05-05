@@ -1,5 +1,6 @@
 package com.pay.api.domain
 
+import com.pay.api.TransactionType
 import com.pay.api.exception.BadRequestException
 import com.pay.api.exception.IllegalStatusException
 import spock.lang.Specification
@@ -123,7 +124,7 @@ class TransactionTest extends Specification {
     def "transaction type 이 PAY 이면서 취소할 잔액이 있으면 isCancellableTransaction 이 true 이다."() {
         when:
         def transaction = new Transaction()
-        transaction.transactionType = "PAY"
+        transaction.transactionType = TransactionType.PAY
         transaction.remainAmount = 1
 
         then:
@@ -133,7 +134,7 @@ class TransactionTest extends Specification {
     def "transaction type 이 PAY 이면서 취소할 잔액이 없으면 isCancellableTransaction 이 false 이다."() {
         when:
         def transaction = new Transaction()
-        transaction.transactionType = "PAY"
+        transaction.transactionType = TransactionType.PAY
         transaction.remainAmount = 0
 
         then:
@@ -143,7 +144,7 @@ class TransactionTest extends Specification {
     def "transaction type 이 CANCEL 이면 isCancellableTransaction 이 false 이다."() {
         when:
         def transaction = new Transaction()
-        transaction.transactionType = "CANCEL"
+        transaction.transactionType = TransactionType.CANCEL
 
         then:
         !transaction.isCancellableTransaction()

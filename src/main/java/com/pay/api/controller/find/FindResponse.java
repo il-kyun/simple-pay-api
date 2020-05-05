@@ -1,5 +1,6 @@
 package com.pay.api.controller.find;
 
+import com.pay.api.TransactionType;
 import com.pay.api.domain.Transaction;
 import lombok.Getter;
 
@@ -15,7 +16,7 @@ public class FindResponse {
 
     private String transactionId;
 
-    private String transactionType;
+    private TransactionType transactionType;
 
     private LocalDateTime createdAt;
 

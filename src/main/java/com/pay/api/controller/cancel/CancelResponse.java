@@ -1,5 +1,6 @@
 package com.pay.api.controller.cancel;
 
+import com.pay.api.TransactionType;
 import com.pay.api.domain.Transaction;
 import lombok.Getter;
 
@@ -12,7 +13,7 @@ public class CancelResponse {
 
     private String transactionId;
 
-    private String transactionType;
+    private TransactionType transactionType;
 
     private LocalDateTime createdAt;
 

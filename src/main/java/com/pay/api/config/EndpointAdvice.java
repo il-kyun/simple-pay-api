@@ -1,6 +1,9 @@
 package com.pay.api.config;
 
-import com.pay.api.exception.*;
+import com.pay.api.exception.ConflictException;
+import com.pay.api.exception.CryptoFailException;
+import com.pay.api.exception.IllegalStatusException;
+import com.pay.api.exception.TransactionNotFoundException;
 import lombok.Getter;
 import org.hibernate.StaleObjectStateException;
 import org.springframework.http.HttpStatus;
@@ -13,11 +16,6 @@ import javax.validation.ConstraintViolationException;
 
 @ControllerAdvice(basePackages = "com.pay.api.controller")
 public class EndpointAdvice extends ResponseEntityExceptionHandler {
-
-    @ExceptionHandler(FieldErrorException.class)
-    public ResponseEntity<ErrorResponse> handleFieldErrorException(FieldErrorException e) {
-        return ResponseEntity.badRequest().body(new ErrorResponse(e.toString()));
-    }
 
     @ExceptionHandler(ConstraintViolationException.class)
     public ResponseEntity<ErrorResponse> handleConstraintViolationException(ConstraintViolationException e) {

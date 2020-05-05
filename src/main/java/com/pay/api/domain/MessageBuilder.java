@@ -12,12 +12,15 @@ import static org.springframework.util.StringUtils.hasText;
 
 class MessageBuilder {
 
+    private enum MessageType {
+        PAYMENT,
+        CANCEL
+    }
+
     private static final int DEFAULT_LENGTH = 450;
-    private static final String PAYMENT_TYPE = "PAYMENT";
-    private static final String CANCEL_TYPE = "CANCEL";
 
     private final String length = "446";
-    private final String type;
+    private final MessageType type;
     private String id;
     private String cardNumber;
     private String installment;
@@ -29,7 +32,7 @@ class MessageBuilder {
     private String encryptedCardInformation;
     private final String temp = "";
 
-    private MessageBuilder(String type) {
+    private MessageBuilder(MessageType type) {
         this.type = type;
     }
 
@@ -95,11 +98,11 @@ class MessageBuilder {
     }
 
     static MessageBuilder newPaymentMessageBuilder() {
-        return new MessageBuilder(PAYMENT_TYPE);
+        return new MessageBuilder(MessageType.PAYMENT);
     }
 
     static MessageBuilder newCancelMessageBuilder() {
-        return new MessageBuilder(CANCEL_TYPE);
+        return new MessageBuilder(MessageType.CANCEL);
     }
 
     String build() {
@@ -119,7 +122,7 @@ class MessageBuilder {
 
     enum DataField {
         DATA_LENGTH(DataType.NUMBER, mb -> mb.length, 4),
-        DATA_TYPE(DataType.STRING, mb -> mb.type, 10),
+        DATA_TYPE(DataType.STRING, mb -> mb.type.name(), 10),
         UID(DataType.STRING, mb -> mb.id, 20),
         CARD_NUMBER(DataType.NUMBER_L, mb -> mb.cardNumber, 20),
         INSTALLMENT(DataType.NUMBER_0, mb -> mb.installment, 2),

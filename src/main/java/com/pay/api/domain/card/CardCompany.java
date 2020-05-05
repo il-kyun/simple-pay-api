@@ -1,13 +1,15 @@
-package com.pay.api.card;
+package com.pay.api.domain.card;
 
 
 import lombok.Getter;
 
 import javax.persistence.*;
 
+import static java.util.Objects.requireNonNull;
+
 @Getter
 @Entity
-public class Card {
+public class CardCompany {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -17,10 +19,10 @@ public class Card {
     @Column(name = "MESSAGE", nullable = false, length = 500)
     private String message;
 
-    public Card() {
+    public CardCompany() {
     }
 
-    public Card(String message) {
-        this.message = message;
+    public CardCompany(String message) {
+        this.message = requireNonNull(message);
     }
 }

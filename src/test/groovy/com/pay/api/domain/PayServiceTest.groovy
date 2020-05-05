@@ -1,12 +1,10 @@
 package com.pay.api.domain
 
-import com.pay.api.card.CardApi
+import com.pay.api.TransactionType
 import com.pay.api.controller.cancel.CancelRequest
 import com.pay.api.controller.find.FindResponse
 import com.pay.api.controller.pay.PayRequest
-import com.pay.api.domain.PayService
-import com.pay.api.domain.Transaction
-import com.pay.api.domain.TransactionRepository
+import com.pay.api.domain.card.CardCompanyApi
 import com.pay.api.exception.ConflictException
 import com.pay.api.exception.IllegalStatusException
 import com.pay.api.exception.TransactionNotFoundException
@@ -22,7 +20,7 @@ class PayServiceTest extends Specification {
 
     PayService payService
     TransactionRepository transactionRepository
-    CardApi cardApi
+    CardCompanyApi cardApi
 
     def setup() {
         transactionRepository = Mock()
@@ -138,7 +136,7 @@ class PayServiceTest extends Specification {
         def amount = 11000
         def vat = 1000
         def transaction = Transaction.newInstance(cardNumber, expirationMonthYear, cvc, installment, amount, vat)
-        transaction.transactionType = "CANCEL"
+        transaction.transactionType = TransactionType.CANCEL
 
         when:
         payService.cancel(transactionId, cancelRequest)

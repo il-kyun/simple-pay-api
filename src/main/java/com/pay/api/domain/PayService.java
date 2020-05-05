@@ -1,11 +1,11 @@
 package com.pay.api.domain;
 
-import com.pay.api.card.CardApi;
 import com.pay.api.controller.cancel.CancelRequest;
 import com.pay.api.controller.cancel.CancelResponse;
 import com.pay.api.controller.find.FindResponse;
 import com.pay.api.controller.pay.PayRequest;
 import com.pay.api.controller.pay.PayResponse;
+import com.pay.api.domain.card.CardCompanyApi;
 import com.pay.api.exception.ConflictException;
 import com.pay.api.exception.IllegalStatusException;
 import com.pay.api.exception.TransactionNotFoundException;
@@ -24,11 +24,11 @@ public class PayService {
     private final ConcurrentMap<String, AtomicInteger> map = new ConcurrentHashMap<>();
 
     private final TransactionRepository transactionRepository;
-    private final CardApi cardApi;
+    private final CardCompanyApi cardCompanyApi;
 
-    public PayService(TransactionRepository transactionRepository, CardApi cardApi) {
+    public PayService(TransactionRepository transactionRepository, CardCompanyApi cardCompanyApi) {
         this.transactionRepository = transactionRepository;
-        this.cardApi = cardApi;
+        this.cardCompanyApi = cardCompanyApi;
     }
 
     @Transactional
@@ -47,7 +47,7 @@ public class PayService {
             Transaction newTransaction = Transaction.newInstance(cardNumber, payRequest.getExpirationMonthYear(), payRequest.getCvc(), payRequest.getInstallment(), payRequest.getAmount(), payRequest.getVat());
             Transaction transaction = transactionRepository.save(newTransaction);
 
-            cardApi.send(transaction.getMessage());
+            cardCompanyApi.send(transaction.getMessage());
 
             return new PayResponse(transaction);
 
@@ -74,7 +74,7 @@ public class PayService {
         Transaction cancelTransactionRequest = targetTransaction.cancel(cancelRequestedAmount, cancelRequestedVat);
         Transaction cancelTransaction = transactionRepository.save(cancelTransactionRequest);
 
-        cardApi.send(cancelTransaction.getMessage());
+        cardCompanyApi.send(cancelTransaction.getMessage());
         return new CancelResponse(cancelTransaction);
     }
 

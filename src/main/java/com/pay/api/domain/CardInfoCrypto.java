@@ -28,15 +28,17 @@ import static org.springframework.util.StringUtils.hasText;
 @Slf4j
 class CardInfoCrypto {
 
-    private static final String ENCRYPT = "ENCRYPT";
-    private static final String DECRYPT = "DECRYPT";
+    private enum CryptoType {
+        DECRYPT,
+        ENCRYPT
+    }
 
     private final String transactionId;
     private String cardNumber;
     private String expirationMonthYear;
     private String cvc;
     private String encryptedCardInfo;
-    private final String type;
+    private final CryptoType type;
 
     private CardInfoCrypto(String transactionId, String cardNumber, String expirationMonthYear, String cvc) {
         checkArgument(hasText(transactionId) && transactionId.length() == 20, "illegal transactionId");
@@ -48,7 +50,7 @@ class CardInfoCrypto {
         this.cardNumber = cardNumber;
         this.expirationMonthYear = expirationMonthYear;
         this.cvc = cvc;
-        this.type = ENCRYPT;
+        this.type = CryptoType.ENCRYPT;
     }
 
     private CardInfoCrypto(String transactionId, String encryptedCardInfo) {
@@ -57,7 +59,7 @@ class CardInfoCrypto {
 
         this.transactionId = transactionId;
         this.encryptedCardInfo = encryptedCardInfo;
-        this.type = DECRYPT;
+        this.type = CryptoType.DECRYPT;
     }
 
     private CardInfoCrypto encrypt() {
@@ -86,28 +88,28 @@ class CardInfoCrypto {
     }
 
     String getCardNumber() {
-        if (!DECRYPT.equals(type)) {
+        if (!CryptoType.DECRYPT.equals(type)) {
             throw new IllegalStatusException("this method is not allowed for not encrypt case");
         }
         return cardNumber;
     }
 
     String getExpirationMonthYear() {
-        if (!DECRYPT.equals(type)) {
+        if (!CryptoType.DECRYPT.equals(type)) {
             throw new IllegalStatusException("this method is not allowed for not encrypt case");
         }
         return expirationMonthYear;
     }
 
     String getCvc() {
-        if (!DECRYPT.equals(type)) {
+        if (!CryptoType.DECRYPT.equals(type)) {
             throw new IllegalStatusException("this method is not allowed for not encrypt case");
         }
         return cvc;
     }
 
     String getEncryptedCardInfo() {
-        if (!ENCRYPT.equals(type)) {
+        if (!CryptoType.ENCRYPT.equals(type)) {
             throw new IllegalStatusException("this method is not allowed for not encrypt case");
         }
         return encryptedCardInfo;

@@ -1,5 +1,6 @@
 package com.pay.api.multithread
 
+import com.pay.api.TransactionType
 import com.pay.api.controller.cancel.CancelRequest
 import com.pay.api.controller.cancel.CancelResponse
 import com.pay.api.controller.find.FindResponse
@@ -102,7 +103,7 @@ class MultiThreadTest3 extends Specification {
         then:
         conflictCount == 4 - successResponseEntityList.size()
         successResponseEntityList.each { it ->
-            it.body.transactionType == "CANCEL"
+            it.body.transactionType == TransactionType.CANCEL
             it.body.amount == 3000
             it.body.vat == 300
             it.body.payTransactionId == transactionId
@@ -117,7 +118,7 @@ class MultiThreadTest3 extends Specification {
 
         then:
         response.body.transactionId == transactionId
-        response.body.transactionType == "PAY"
+        response.body.transactionType == TransactionType.PAY
         response.body.remainAmount == 11000 - (successCount * 3000)
         response.body.remainVat == 1000 - (successCount * 300)
         response.body.cancelTransactionList.size() == successCount
