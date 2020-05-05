@@ -1,7 +1,7 @@
 package com.pay.api.domain;
 
+import com.pay.api.exception.BadRequestException;
 import com.pay.api.exception.CryptoFailException;
-import com.pay.api.exception.IllegalStatusException;
 import lombok.extern.slf4j.Slf4j;
 
 import javax.crypto.Cipher;
@@ -89,28 +89,28 @@ class CardInfoCrypto {
 
     String getCardNumber() {
         if (!CryptoType.DECRYPT.equals(type)) {
-            throw new IllegalStatusException("this method is not allowed for not encrypt case");
+            throw new BadRequestException("this method is not allowed for not encrypt case");
         }
         return cardNumber;
     }
 
     String getExpirationMonthYear() {
         if (!CryptoType.DECRYPT.equals(type)) {
-            throw new IllegalStatusException("this method is not allowed for not encrypt case");
+            throw new BadRequestException("this method is not allowed for not encrypt case");
         }
         return expirationMonthYear;
     }
 
     String getCvc() {
         if (!CryptoType.DECRYPT.equals(type)) {
-            throw new IllegalStatusException("this method is not allowed for not encrypt case");
+            throw new BadRequestException("this method is not allowed for not encrypt case");
         }
         return cvc;
     }
 
     String getEncryptedCardInfo() {
         if (!CryptoType.ENCRYPT.equals(type)) {
-            throw new IllegalStatusException("this method is not allowed for not encrypt case");
+            throw new BadRequestException("this method is not allowed for not encrypt case");
         }
         return encryptedCardInfo;
     }

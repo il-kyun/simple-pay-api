@@ -1,9 +1,6 @@
 package com.pay.api.config;
 
-import com.pay.api.exception.ConflictException;
-import com.pay.api.exception.CryptoFailException;
-import com.pay.api.exception.IllegalStatusException;
-import com.pay.api.exception.TransactionNotFoundException;
+import com.pay.api.exception.*;
 import lombok.Getter;
 import org.hibernate.StaleObjectStateException;
 import org.springframework.http.HttpStatus;
@@ -25,6 +22,11 @@ public class EndpointAdvice extends ResponseEntityExceptionHandler {
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ErrorResponse> handleIllegalArgumentException(IllegalArgumentException e) {
         return ResponseEntity.badRequest().body(new ErrorResponse(e.getMessage()));
+    }
+
+    @ExceptionHandler(BadRequestException.class)
+    public ResponseEntity<ErrorResponse> handleBadRequestException(BadRequestException e) {
+        return ResponseEntity.status(HttpStatus.NOT_ACCEPTABLE).body(new ErrorResponse(e.getMessage()));
     }
 
     @ExceptionHandler(IllegalStatusException.class)

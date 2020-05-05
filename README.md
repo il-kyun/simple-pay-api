@@ -76,7 +76,7 @@
            - BadRequestException : 잘못 된 요청
            - ConflictException : 트랜잭션 충돌 
            - CryptoFailException : 암호화 실패
-           - FieldErrorException : invalid request
+           - ConstraintViolationException : invalid request
            - IllegalStatusException : 요청이 처리 될 수 없는 상태
            - TransactionNotFoundException : 요청을 시도한 대상 트랜잭션이 없음
        
