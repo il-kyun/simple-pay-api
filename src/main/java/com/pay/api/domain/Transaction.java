@@ -89,7 +89,13 @@ public class Transaction {
     private Transaction(String cardNumber, String expirationMonthYear, String cvc, Integer installment, Long amount, Long vat) {
         this(TransactionType.PAY);
 
+        this.installment = installment;
         this.encryptedCardInfo = CardInfoCrypto.encrypt(this.transactionId, cardNumber, expirationMonthYear, cvc).getEncryptedCardInfo();
+
+        this.amount = amount;
+        this.vat = vat;
+        this.remainAmount = this.amount;
+        this.remainVat = this.vat;
 
         this.message = MessageBuilder.newPaymentMessageBuilder()
                 .id(this.transactionId)
@@ -101,12 +107,6 @@ public class Transaction {
                 .vat(vat)
                 .encryptedCardInformation(this.encryptedCardInfo)
                 .build();
-
-        this.installment = installment;
-        this.amount = amount;
-        this.vat = vat;
-        this.remainAmount = this.amount;
-        this.remainVat = this.vat;
     }
 
     private Transaction(Transaction payTransaction, Long requestedAmount, Long requestedVat) {
@@ -122,8 +122,6 @@ public class Transaction {
 
         this.payTransaction = payTransaction;
 
-        payTransaction.updateRemainAmountAndVat(this.remainAmount, this.remainVat);
-
         final CardInfoCrypto cardInfoCrypto = payTransaction.getCardInfo();
         this.message = MessageBuilder.newCancelMessageBuilder()
                 .id(this.transactionId)
@@ -136,6 +134,8 @@ public class Transaction {
                 .payTransactionId(payTransaction.getTransactionId())
                 .encryptedCardInformation(this.encryptedCardInfo)
                 .build();
+
+        payTransaction.updateRemainAmountAndVat(this.remainAmount, this.remainVat);
     }
 
     @PrePersist
