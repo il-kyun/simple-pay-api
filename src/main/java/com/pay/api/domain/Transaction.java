@@ -81,14 +81,18 @@ public class Transaction {
     public Transaction() {
     }
 
-    private Transaction(String cardNumber, String expirationMonthYear, String cvc, Integer installment, Long amount, Long vat) {
+    private Transaction(TransactionType transactionType) {
         this.transactionId = generateTransactionId();
-        this.transactionType = TransactionType.PAY;
+        this.transactionType = transactionType;
+    }
+
+    private Transaction(String cardNumber, String expirationMonthYear, String cvc, Integer installment, Long amount, Long vat) {
+        this(TransactionType.PAY);
 
         this.encryptedCardInfo = CardInfoCrypto.encrypt(this.transactionId, cardNumber, expirationMonthYear, cvc).getEncryptedCardInfo();
 
         this.message = MessageBuilder.newPaymentMessageBuilder()
-                .id(this.getTransactionId())
+                .id(this.transactionId)
                 .cardNumber(cardNumber)
                 .expirationMonthYear(expirationMonthYear)
                 .cvc(cvc)
@@ -106,8 +110,7 @@ public class Transaction {
     }
 
     private Transaction(Transaction payTransaction, Long requestedAmount, Long requestedVat) {
-        this.transactionId = generateTransactionId();
-        this.transactionType = TransactionType.CANCEL;
+        this(TransactionType.CANCEL);
 
         this.installment = 0;
         this.encryptedCardInfo = payTransaction.getEncryptedCardInfo();
@@ -123,11 +126,11 @@ public class Transaction {
 
         final CardInfoCrypto cardInfoCrypto = payTransaction.getCardInfo();
         this.message = MessageBuilder.newCancelMessageBuilder()
-                .id(this.getTransactionId())
+                .id(this.transactionId)
                 .cardNumber(cardInfoCrypto.getCardNumber())
                 .expirationMonthYear(cardInfoCrypto.getExpirationMonthYear())
                 .cvc(cardInfoCrypto.getCvc())
-                .installment(payTransaction.installment)
+                .installment(this.installment)
                 .amount(requestedAmount)
                 .vat(requestedVat)
                 .payTransactionId(payTransaction.getTransactionId())
