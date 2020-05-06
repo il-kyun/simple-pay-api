@@ -21,7 +21,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 @Service
 public class PayService {
 
-    private final ConcurrentMap<String, AtomicInteger> map = new ConcurrentHashMap<>();
+    private final ConcurrentMap<String, AtomicInteger> map;
 
     private final TransactionRepository transactionRepository;
     private final CardCompanyApi cardCompanyApi;
@@ -29,6 +29,8 @@ public class PayService {
     public PayService(TransactionRepository transactionRepository, CardCompanyApi cardCompanyApi) {
         this.transactionRepository = transactionRepository;
         this.cardCompanyApi = cardCompanyApi;
+
+        this.map = new ConcurrentHashMap<>();
     }
 
     @Transactional
@@ -36,11 +38,8 @@ public class PayService {
 
         final String cardNumber = payRequest.getCardNumber();
 
-        map.computeIfAbsent(cardNumber, key -> new AtomicInteger());
-        int atomic = map.get(cardNumber).getAndIncrement();
-
-        if (atomic != 0) {
-            throw new ConflictException("Only one request can be processed at the same time !!");
+        if (!tryAcquireBy(cardNumber)) {
+            throw new ConflictException("Only one request per card number can be processed at the same time !!");
         }
 
         try {
@@ -55,14 +54,21 @@ public class PayService {
             log.error("Error during create pay transaction", e);
             throw e;
         } finally {
-            map.remove(cardNumber);
+            release(cardNumber);
         }
+    }
+
+    private boolean tryAcquireBy(final String cardNumber) {
+        return map.computeIfAbsent(cardNumber, key -> new AtomicInteger())
+                .getAndIncrement() == 0;
+    }
+
+    private void release(final String cardNumber) {
+        map.remove(cardNumber);
     }
 
     @Transactional
     public CancelResponse cancel(String transactionId, CancelRequest cancelRequest) {
-        final Long cancelRequestedAmount = cancelRequest.getAmount();
-        final Long cancelRequestedVat = cancelRequest.getVat();
 
         final Transaction targetTransaction = transactionRepository.findByTransactionId(transactionId)
                 .orElseThrow(() -> new TransactionNotFoundException("transactionId : " + transactionId));
@@ -71,7 +77,7 @@ public class PayService {
             throw new IllegalStatusException("Cancellation requests are only available for pay transaction.");
         }
 
-        Transaction cancelTransactionRequest = targetTransaction.cancel(cancelRequestedAmount, cancelRequestedVat);
+        Transaction cancelTransactionRequest = targetTransaction.cancel(cancelRequest.getAmount(), cancelRequest.getVat());
         Transaction cancelTransaction = transactionRepository.save(cancelTransactionRequest);
 
         cardCompanyApi.send(cancelTransaction.getMessage());

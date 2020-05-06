@@ -1,11 +1,11 @@
 package com.pay.api.multithread
 
-import com.pay.api.TransactionType
 import com.pay.api.controller.cancel.CancelRequest
 import com.pay.api.controller.cancel.CancelResponse
 import com.pay.api.controller.find.FindResponse
 import com.pay.api.controller.pay.PayRequest
 import com.pay.api.controller.pay.PayResponse
+import com.pay.api.type.TransactionType
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.boot.test.web.client.TestRestTemplate

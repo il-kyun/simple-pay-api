@@ -1,4 +1,4 @@
-package com.pay.api;
+package com.pay.api.type;
 
 public enum TransactionType {
     PAY,

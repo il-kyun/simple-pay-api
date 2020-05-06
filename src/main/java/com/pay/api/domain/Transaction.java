@@ -1,9 +1,9 @@
 package com.pay.api.domain;
 
 import com.google.common.base.Strings;
-import com.pay.api.TransactionType;
 import com.pay.api.exception.BadRequestException;
 import com.pay.api.exception.IllegalStatusException;
+import com.pay.api.type.TransactionType;
 import lombok.Getter;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.OptimisticLockType;

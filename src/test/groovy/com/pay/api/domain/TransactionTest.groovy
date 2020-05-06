@@ -1,8 +1,8 @@
 package com.pay.api.domain
 
-import com.pay.api.TransactionType
 import com.pay.api.exception.BadRequestException
 import com.pay.api.exception.IllegalStatusException
+import com.pay.api.type.TransactionType
 import spock.lang.Specification
 import spock.lang.Unroll
 

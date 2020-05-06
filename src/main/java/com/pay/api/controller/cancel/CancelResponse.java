@@ -1,7 +1,7 @@
 package com.pay.api.controller.cancel;
 
-import com.pay.api.TransactionType;
 import com.pay.api.domain.Transaction;
+import com.pay.api.type.TransactionType;
 import lombok.Getter;
 
 import java.time.LocalDateTime;

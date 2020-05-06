@@ -1,6 +1,5 @@
 package com.pay.api.domain
 
-import com.pay.api.TransactionType
 import com.pay.api.controller.cancel.CancelRequest
 import com.pay.api.controller.find.FindResponse
 import com.pay.api.controller.pay.PayRequest
@@ -8,6 +7,7 @@ import com.pay.api.domain.card.CardCompanyApi
 import com.pay.api.exception.ConflictException
 import com.pay.api.exception.IllegalStatusException
 import com.pay.api.exception.TransactionNotFoundException
+import com.pay.api.type.TransactionType
 import spock.lang.Specification
 
 import java.time.LocalDateTime
