@@ -106,7 +106,7 @@
    
    ### 빌드 및 실행하기
    ```
-   git clone .git
+   git clone https://github.com/il-kyun/simple-pay-api.git
    cd simple-pay-api
    ./gradlew clean build
    java -jar build/libs/simple-pay-api.jar
